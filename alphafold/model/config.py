@@ -179,6 +179,7 @@ CONFIG = ml_collections.ConfigDict({
             'max_msa_clusters': 512,
             'max_templates': 4,
             'num_ensemble': 1,
+            'return_representations': True,
         },
     },
     'model': {
