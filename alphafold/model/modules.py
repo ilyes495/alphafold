@@ -309,13 +309,17 @@ class AlphaFold(hk.Module):
     impl = AlphaFoldIteration(self.config, self.global_config)
     batch_size, num_residues = batch['aatype'].shape
 
-    def get_prev(ret):
+    def get_prev(ret, idx):
+
+      prev_ret ={ f'msa_first_row_iter_{idx}': ret[f'msa_first_row_iter_{idx}'] for idx in range(0,idx)}
       new_prev = {
           'prev_pos':
               ret['structure_module']['final_atom_positions'],
           'prev_msa_first_row': ret['representations']['msa_first_row'],
           'prev_pair': ret['representations']['pair'],
       }
+
+      new_prev.update(prev_ret)
       return jax.tree_map(jax.lax.stop_gradient, new_prev)
 
     def do_call(prev,
@@ -1904,6 +1908,8 @@ class EmbeddingsAndEvoformer(hk.Module):
         # Crop away template rows such that they are not used in MaskedMsaHead.
         'msa': msa_activations[:num_sequences, :, :],
         'msa_first_row': msa_activations[0],
+        f'msa_iter_{k}': msa_activations[:num_sequences, :, :],
+        f'msa_first_row_iter_{k}': msa_activations[0],
     }
 
     return output

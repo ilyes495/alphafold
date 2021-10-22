@@ -61,7 +61,7 @@ class RunModel:
           is_training=False,
           compute_loss=False,
           ensemble_representations=True,
-          return_representations=config.data.eval['return_representations'])
+          return_representations=self.config.return_representations)
 
     self.apply = jax.jit(hk.transform(_forward_fn).apply)
     self.init = jax.jit(hk.transform(_forward_fn).init)
