@@ -308,3 +308,17 @@ if __name__ == '__main__':
   ])
 
   app.run(main)
+
+
+# --fasta_paths=/data/input.fasta \
+# --output_dir=/data/alphafold_output \
+# --model_names='model_1' \
+# --data_dir=/data \
+# --uniref90_database_path=/data/uniref90/uniref90.fasta \
+# --mgnify_database_path=/data/mgnify/mgy_clusters_2018_12.fa \
+# --small_bfd_database_path=/data/small_bfd/bfd-first_non_consensus_sequences.fasta \
+# --pdb70_database_path=/data/pdb70/pdb70 \
+# --template_mmcif_dir=/data/pdb_mmcif/mmcif_files \
+# --max_template_date=2020-05-14 \
+# --obsolete_pdbs_path=/data/pdb_mmcif/obsolete.dat \
+# --preset=reduced_dbs

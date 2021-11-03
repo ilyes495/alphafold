@@ -82,4 +82,20 @@ RUN echo $'#!/bin/bash\n\
 ldconfig\n\
 python /app/alphafold/run_alphafold.py "$@"' > /app/run_alphafold.sh \
   && chmod +x /app/run_alphafold.sh
-ENTRYPOINT ["/app/run_alphafold.sh"]
+# ENTRYPOINT ["/app/run_alphafold.sh"]
+
+
+# add cell2loc_env kernel for jupyter environment 
+RUN /bin/bash -c "python -m ipykernel install --prefix=/opt/conda/envs/cell2loc_env/ --name=cell2loc_env --display-name='Container (cell2loc_env)'" 
+
+# copy notebooks to the image
+COPY docs/notebooks notebooks
+RUN /bin/bash -c "jupyter trust /app/alphafold/notebooks/*.ipynb";
+
+# launch jupyter
+CMD ["jupyter", "notebook", \
+    "--notebook-dir=/notebooks", \
+    "--NotebookApp.token='cell2loc'", \
+    "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root"]
+
+EXPOSE 8888

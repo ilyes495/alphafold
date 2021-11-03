@@ -31,6 +31,10 @@ import haiku as hk
 import jax
 import jax.numpy as jnp
 
+from jax import jit
+
+import numpy as np
+
 
 def softmax_cross_entropy(logits, labels):
   """Computes softmax cross entropy given logits and one-hot class labels."""
@@ -158,6 +162,7 @@ class AlphaFoldIteration(hk.Module):
     evoformer_module = EmbeddingsAndEvoformer(
         self.config.embeddings_and_evoformer, self.global_config)
     batch0 = slice_batch(0)
+
     representations = evoformer_module(batch0, is_training)
 
     # MSA representations are not ensembled so
@@ -309,17 +314,15 @@ class AlphaFold(hk.Module):
     impl = AlphaFoldIteration(self.config, self.global_config)
     batch_size, num_residues = batch['aatype'].shape
 
-    def get_prev(ret, idx):
-
-      prev_ret ={ f'msa_first_row_iter_{idx}': ret[f'msa_first_row_iter_{idx}'] for idx in range(0,idx)}
+    def get_prev(ret):
+      
       new_prev = {
           'prev_pos':
               ret['structure_module']['final_atom_positions'],
           'prev_msa_first_row': ret['representations']['msa_first_row'],
-          'prev_pair': ret['representations']['pair'],
+          'prev_pair': ret['representations']['pair'],     
       }
 
-      new_prev.update(prev_ret)
       return jax.tree_map(jax.lax.stop_gradient, new_prev)
 
     def do_call(prev,
@@ -369,29 +372,44 @@ class AlphaFold(hk.Module):
         # Eval mode or tests: use the maximum number of iterations.
         num_iter = self.config.num_recycle
 
-      body = lambda x: (x[0] + 1,  # pylint: disable=g-long-lambda
-                        get_prev(do_call(x[1], recycle_idx=x[0],
-                                         compute_loss=False)))
+      # body = lambda x: (x[0] + 1,  # pylint: disable=g-long-lambda
+      #                   get_prev(
+      #                     do_call(x[1], recycle_idx=x[0], compute_loss=False)
+      #                     ))
+
+      def body(carry_x, _):
+        out_x = get_prev(do_call(carry_x[1], recycle_idx=carry_x[0], compute_loss=False))
+        
+        return (carry_x[0] + 1, out_x), out_x['prev_msa_first_row']
+
+
+    
+      
+
       if hk.running_init():
         # When initializing the Haiku module, run one iteration of the
         # while_loop to initialize the Haiku modules used in `body`.
-        _, prev = body((0, prev))
+        _, prev = body(0, prev)
       else:
-        _, prev = hk.while_loop(
-            lambda x: x[0] < num_iter,
-            body,
-            (0, prev))
+        (_, prev), stacks = hk.scan(f=body, init=(0,prev), length = num_iter, xs=None)
+        # _, prev = hk.while_loop(
+        #     lambda x: x[0] < num_iter,
+        #     body,
+        #     (0, prev))
+        
     else:
       prev = {}
       num_iter = 0
 
     ret = do_call(prev=prev, recycle_idx=num_iter)
+
     if compute_loss:
       ret = ret[0], [ret[1]]
 
     if not return_representations:
       del (ret[0] if compute_loss else ret)['representations']  # pytype: disable=unsupported-operands
-    return ret
+    
+    return ret, stacks
 
 
 class TemplatePairStack(hk.Module):
@@ -1908,8 +1926,6 @@ class EmbeddingsAndEvoformer(hk.Module):
         # Crop away template rows such that they are not used in MaskedMsaHead.
         'msa': msa_activations[:num_sequences, :, :],
         'msa_first_row': msa_activations[0],
-        f'msa_iter_{k}': msa_activations[:num_sequences, :, :],
-        f'msa_first_row_iter_{k}': msa_activations[0],
     }
 
     return output
