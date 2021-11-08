@@ -493,7 +493,7 @@ class StructureModule(hk.Module):
         is_training=is_training,
         safe_key=safe_key)
 
-    print(f"line 497/folding, output --> {output.keys()}")
+    # print(f"line 497/folding, output --> {output.keys()}")
     ret['representations'] = {'structure_module': output['act'], 'structure_msa': output['act']}
 
     ret['traj'] = output['affine'] * jnp.array([1.] * 4 +

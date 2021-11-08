@@ -175,7 +175,7 @@ class RunModel:
       result['representations'][f'structure_msa_first_row_iter_{i}'] = x
 
     result['representations'][f'msa_first_row_iter_3'] = result['representations'].pop('msa_first_row')
-    result['representations'][f'structure_msa_first_row_iter_3'] = result['representations'].pop('structure_msa_first_row')
+    result['representations'][f'structure_msa_first_row_iter_3'] = result['representations'].pop('structure_msa')
 
     
     # print(f'\nline 141/models representations --> {result["representations"]}\n')
