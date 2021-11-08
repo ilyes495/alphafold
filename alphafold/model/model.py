@@ -69,6 +69,7 @@ class RunModel:
                params: Optional[Mapping[str, Mapping[str, np.ndarray]]] = None):
     self.config = config
     self.params = params
+    self.multimer_mode = config.model.global_config.multimer_mode
 
     def _forward_fn(batch):
       model = modules.AlphaFold(self.config.model)
@@ -166,18 +167,20 @@ class RunModel:
     jax.tree_map(lambda x: x.block_until_ready(), stacks)
     
     
-
-    for i,x in enumerate(stacks):
+    # print(f'stacks: {stacks}')
+    for i,x in enumerate(stacks['prev_msa_first_row']):
       result['representations'][f'msa_first_row_iter_{i}'] = x
+    
+    for i,x in enumerate(stacks['structure_msa_first_row']):  
+      result['representations'][f'structure_msa_first_row_iter_{i}'] = x
+
     result['representations'][f'msa_first_row_iter_3'] = result['representations'].pop('msa_first_row')
+    result['representations'][f'structure_msa_first_row_iter_3'] = result['representations'].pop('structure_msa_first_row')
 
     
     # print(f'\nline 141/models representations --> {result["representations"]}\n')
 
-    result.update(get_confidence_metrics(result))
-
-    
-
+    result.update(get_confidence_metrics(result, self.multimer_mode))
     logging.info('Output shape was %s',
                  tree.map_structure(lambda x: x.shape, result))
     return result

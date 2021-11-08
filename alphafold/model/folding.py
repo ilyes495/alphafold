@@ -441,6 +441,7 @@ def generate_affines(representations, batch, config, global_config,
           representations['pair'])
 
   outputs = []
+  
   safe_keys = safe_key.split(c.num_layer)
   for sub_key in safe_keys:
     activations, output = fold_iteration(
@@ -453,10 +454,12 @@ def generate_affines(representations, batch, config, global_config,
         is_training=is_training,
         aatype=batch['aatype'])
     outputs.append(output)
+    
 
   output = jax.tree_map(lambda *x: jnp.stack(x), *outputs)
   # Include the activations in the output dict for use by the LDDT-Head.
   output['act'] = activations['act']
+  
 
   return output
 
@@ -490,7 +493,8 @@ class StructureModule(hk.Module):
         is_training=is_training,
         safe_key=safe_key)
 
-    ret['representations'] = {'structure_module': output['act']}
+    print(f"line 497/folding, output --> {output.keys()}")
+    ret['representations'] = {'structure_module': output['act'], 'structure_msa': output['act']}
 
     ret['traj'] = output['affine'] * jnp.array([1.] * 4 +
                                                [c.position_scale] * 3)

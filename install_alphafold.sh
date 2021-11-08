@@ -22,12 +22,12 @@ pip install --upgrade "jax[cuda111]" -f \
 
 
 # work_path=/path/to/alphafold-code
-work_path=[PATH_TO_ALPHAFOLD]
+# work_path=.
 
 # update openmm 
 a=$(which python)
 cd $(dirname $(dirname $a))/lib/python3.8/site-packages
-patch -p0 < $work_path/docker/openmm.patch
+patch -p0 < ./docker/openmm.patch
 
 # Download stereo_chemical_props.txt file
-wget -q -P [PATH_TO_ALPHAFOLD]/alphafold/common/ https://git.scicore.unibas.ch/schwede/openstructure/-/raw/7102c63615b64735c4941278d92b554ec94415f8/modules/mol/alg/src/stereo_chemical_props.txt
+wget -q -P ./alphafold/common/ https://git.scicore.unibas.ch/schwede/openstructure/-/raw/7102c63615b64735c4941278d92b554ec94415f8/modules/mol/alg/src/stereo_chemical_props.txt

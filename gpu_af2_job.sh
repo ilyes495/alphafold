@@ -4,9 +4,9 @@
 #BSUB -q gpuqueue
 #BSUB -m ly-gpu
 #BSUB -n 8
-#BSUB -R rusage[mem=16] 
+#BSUB -R rusage[mem=32] 
 #BSUB -W 72:00
-#BSUB -gpu num=1
+#BSUB -gpu num=2
 #BSUB -o %J.stdout
 #BSUB -eo %J.stderr
 

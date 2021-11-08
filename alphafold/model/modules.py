@@ -34,6 +34,9 @@ import jax.numpy as jnp
 from jax import jit
 
 import numpy as np
+import tree
+
+from absl import logging
 
 
 def softmax_cross_entropy(logits, labels):
@@ -242,7 +245,7 @@ class AlphaFoldIteration(hk.Module):
         ret[name] = module(representations, batch, is_training)
         if 'representations' in ret[name]:
           # Extra representations from the head. Used by the structure module
-          # to provide activations for the PredictedLDDTHead.
+
           representations.update(ret[name].pop('representations'))
       if compute_loss:
         total_loss += loss(module, head_config, ret, name)
@@ -378,9 +381,17 @@ class AlphaFold(hk.Module):
       #                     ))
 
       def body(carry_x, _):
-        out_x = get_prev(do_call(carry_x[1], recycle_idx=carry_x[0], compute_loss=False))
+
+        # print(f"line 382: carry_x --> {carry_x[1].keys()}")
+        call_out = do_call(carry_x[1], recycle_idx=carry_x[0], compute_loss=False)
+        # print(f"line 384: call_out --> {call_out.keys()}")
+        # print(f"line 387: call_out/representations --> {call_out['representations'].keys()}")
+        # logging.info('Running predict with shape(feat) = %s',
+        #          tree.map_structure(lambda x: x.shape, call_out['representations']))
+
+        out_x = get_prev(call_out)
         
-        return (carry_x[0] + 1, out_x), out_x['prev_msa_first_row']
+        return (carry_x[0] + 1, out_x), {"prev_msa_first_row": out_x['prev_msa_first_row'], 'structure_msa_first_row': call_out['representations']['structure_msa']}
 
 
     

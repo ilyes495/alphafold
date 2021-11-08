@@ -1,5 +1,6 @@
 ![header](imgs/header.jpg)
 
+## NOTE: This repo extracts the first msa row from each of the recycling iterations to use for other tasks other than protein prediction. The intermediate features can econde useful protein representation. 
 # AlphaFold
 
 This package provides an implementation of the inference pipeline of AlphaFold
