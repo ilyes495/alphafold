@@ -5,9 +5,8 @@
 *.stdout
 __pycache__
 
-data
-alphafold_output
-input_sequences
+# Data
+output
 
 # Logs
 logs
