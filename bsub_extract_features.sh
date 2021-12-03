@@ -1,7 +1,7 @@
 #!/bin/bash
-#BSUB -J run-alphafold[1-2]
+#BSUB -J run-alphafold[1-745]
 #BSUB -q gpuqueue
-#BSUB -W 8:00
+#BSUB -W 12:00
 #BSUB -R rusage[mem=20]
 #BSUB -gpu "num=1"
 #BSUB -n 8
@@ -33,14 +33,11 @@ python3 run_extract_features.py \
 --output_dir=$OUTPUT_DIR \
 --uniref90_database_path=$DATA_DIR/uniref90/uniref90.fasta \
 --mgnify_database_path=$DATA_DIR/mgnify/mgy_clusters_2018_12.fa \
---small_bfd_database_path=$DATA_DIR/small_bfd/bfd-first_non_consensus_sequences.fasta \
+--bfd_database_path=$DATA_DIR/bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt \
+--uniclust30_database_path=$DATA_DIR/uniclust30/uniclust30_2018_08/uniclust30_2018_08 \
 --pdb70_database_path=$DATA_DIR/pdb70/pdb70 \
 --template_mmcif_dir=$DATA_DIR/pdb_mmcif/mmcif_files \
 --max_template_date=2020-05-14 \
 --obsolete_pdbs_path=$DATA_DIR/pdb_mmcif/obsolete.dat \
---db_preset='reduced_dbs' \
+--db_preset='full_dbs' \
 --model_name='model_1'
-
-#--bfd_database_path=$DATA_DIR/bfd/bfd_metaclust_clu_complete_id30_c90_final_seq.sorted_opt \
-#--uniclust30_database_path=$DATA_DIR/uniclust30/uniclust30_2018_08/uniclust30_2018_08 \
-#--db_preset='full_dbs' \
