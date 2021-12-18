@@ -1,12 +1,12 @@
 #!/bin/bash
-#BSUB -J run-alphafold[1-745]
+#BSUB -J run_alphafold[1-497]
 #BSUB -q gpuqueue
-#BSUB -W 12:00
-#BSUB -R rusage[mem=20]
+#BSUB -W 8:00
+#BSUB -R rusage[mem=60]
 #BSUB -gpu "num=1"
 #BSUB -n 8
-#BSUB -o logs/%J_%I.stdout
-#BSUB -eo logs/%J_%I.stderr
+#BSUB -o logs/run_alphafold_%J.stdout
+#BSUB -eo logs/run_alphafold%J.stderr
 
 # activate conda environment
 source ~/.bashrc
@@ -18,8 +18,8 @@ export XLA_PYTHON_CLIENT_MEM_FRACTION=4.0
 
 # set directories
 DATA_DIR=/data/alphafold-db/
-INPUT_DIR=input/
-OUTPUT_DIR=output/
+INPUT_DIR=/data/morrisq/alphafold/rbr_seq_15/rbr_seq/
+OUTPUT_DIR=/data/morrisq/alphafold/rbr_seq_15/af2_output/
 
 # get input file
 INPUT_FILES=($INPUT_DIR/*)
