@@ -32,11 +32,11 @@ The representation extraction process consists of two parts. First, to save the 
 `scripts/run_extract_features.py`: This script runs AlphaFold v2.0 and saves intermediate representations.
 
 `bsub/bsub_extract_features.sh`: This script submits a jobarray for the above script on an HPC with an LSF scheduler.
-    - `#BSUB -J run-alphafold[1-355]`: This indicates a job array for the 355 RBRs in the dataset.
-    - `#BSUB -R rusage[mem=10]`: Please increase the memory requirement as needed.
-    - `#BSUB -n 8`: Exactly 8 cores are required to run an AlphaFold job.
-    - Please set `DATA_DIR` to the directory containing the AlphaFold database.
-    - Please create a `logs/` folder. stdout and stderr files will be saved here.
+  - `#BSUB -J run-alphafold[1-355]`: This indicates a job array for the 355 RBPs in the dataset.
+  - `#BSUB -R rusage[mem=10]`: Please increase the memory requirement as needed.
+  - `#BSUB -n 8`: Exactly 8 cores are required to run an AlphaFold job.
+  - Please set `DATA_DIR` to the directory containing the AlphaFold database.
+  - Stdout and stderr files will be saved in `logs/`.
 
 ### Feature unpacking
 `scripts/run_unpack_features.py`: This script unpacks the output from `run_extract_features.py` and saves the 12 intermediate representations.
