@@ -13,10 +13,8 @@ conda install -y -c bioconda hmmer==3.3.2 hhsuite==3.3.0 kalign2==2.04
 
 # install pip packages
 pip install -r requirements.txt
-pip install --upgrade "jax[cuda111]" -f \
-    https://storage.googleapis.com/jax-releases/jax_releases.html \
-    && pip3 install jaxlib==0.1.70+cuda111 -f \
-    https://storage.googleapis.com/jax-releases/jax_releases.html
+pip install jaxlib==0.2.24 -f https://storage.googleapis.com/jax-releases/jax_releases.html \
+  && pip3 install jaxlib==0.1.70+cuda111 -f https://storage.googleapis.com/jax-releases/jax_releases.html
 
 # update openmm
 alphafold_path=$(pwd)

@@ -17,3 +17,5 @@ pids
 # Mac files
 .DS_Store
 
+
+logs/*
